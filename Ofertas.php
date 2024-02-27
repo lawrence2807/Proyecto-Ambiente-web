@@ -23,7 +23,7 @@
             </a>
 
             <nav>
-                <a href="Menu_Principal.php" class="nav-link">Inicio</a>
+                <a href="" class="nav-link">Inicio</a>
                 <a href="" class="nav-link">Noticias</a>
                 <a href="" class="nav-link">Ayuda</a>
                 <a href="" class="nav-link">Guias</a>
@@ -36,20 +36,12 @@
         <a class="navegacion__enlace" href="Hombre.php">Hombres</a>
         <a class="navegacion__enlace" href="Mujeres.php">Mujeres</a>
         <a class="navegacion__enlace" href="Niños.php">Niño/a</a>
-        <a class="navegacion__enlace" href="Ofertas.php">Ofertas</a>
+        <a class="navegacion__enlace--activo" href="Ofertas.php">Ofertas</a>
     </nav>
 
   
-    <div class="slider-box">
-
-    <ul>
-        <li>
-            <img src="" alt="">
-</li>
-
-    </ul>
-
-
+    <div class="img_pre">
+    <img src="img/974728-800-800.png" alt="">  
 
     </div>
 
