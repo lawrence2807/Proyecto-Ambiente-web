@@ -6,51 +6,69 @@ require 'vendor/autoload.php';
 
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $mail->Host       = 'smtp.gmail.com';
-$mail->SMTPAuth   = true;
-$mail->Username   = 'tucalzadoclientes@gmail.com';
-$mail->Password   = 'TucalzadoClientes12.';
-$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-$mail->Port       = 587;
+// Inicializar la conexión a la base de datos si es necesario
+$servername = "localhost";
+$username = "root";
+$password = "Conexion";
+$dbname = "tutienda";
+$conn = new mysqli($servername, $username, $password, $dbname);
 
+if ($conn->connect_error) {
+    die("La conexión falló: " . $conn->connect_error);
+}
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
+// Configuración del servidor SMTP
+$mail = new PHPMailer(true);
 
-    if ($conn->connect_error) {
-        die("La conexión falló: " . $conn->connect_error);
+try {
+    // Configuración del servidor SMTP
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.office365.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'skylm12@outlook.com';
+    $mail->Password   = 'Elnegrocatu12.';
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port       = 587;
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST['correo'])) {
+            $correo = $_POST['correo'];
+
+            // Generar y almacenar el código en la base de datos
+            $codigo = bin2hex(random_bytes(6));
+            $expiracion = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+            $_SESSION['correo_recuperacion'] = $correo;
+            $_SESSION['codigo_recuperacion'] = $codigo;
+            
+            // Guardar el correo y el código en la base de datos
+            $stmt = $conn->prepare("INSERT INTO RecuperacionContrasena (Correo, Token, Expiracion, Codigo) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $correo, $codigo, $expiracion, $codigo);
+            $stmt->execute();
+
+            // Imprimir el código generado (puedes quitar esto en producción)
+            echo "Código de recuperación: $codigo";
+
+            // Resto del código para enviar el correo
+            $mail->setFrom('skylm12@outlook.com', 'Tu Calzado');
+            $mail->addAddress($correo);
+
+            $mail->isHTML(true);
+            $mail->Subject = 'Código de recuperación de contraseña';
+            $mail->Body    = "Tu código de recuperación es: $codigo";
+
+            $mail->send();
+
+            // Redirigir a CambiarContraseña.php
+            header("Location: CambiarContraseña.php");
+            exit();
+        } else {
+            echo "Error: Debes proporcionar una dirección de correo electrónico.";
+        }
     }
 
-    $correo = $conn->real_escape_string($_POST["correo"]);
-    $token = $conn->real_escape_string($_POST["token"]);
-    $nuevaContrasena = password_hash($_POST["nuevaContrasena"], PASSWORD_DEFAULT);
-
-    // Verificar si el token es válido
-    $stmt = $conn->prepare("SELECT * FROM RecuperacionContrasena WHERE Correo = ? AND Token = ? AND Expiracion > NOW()");
-    $stmt->bind_param("ss", $correo, $token);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        // Actualizar la contraseña del usuario
-        $stmt = $conn->prepare("UPDATE Usuarios SET Contraseña = ? WHERE CorreoElectronico = ?");
-        $stmt->bind_param("ss", $nuevaContrasena, $correo);
-        $stmt->execute();
-
-        // Eliminar el registro de recuperación de contraseña
-        $stmt = $conn->prepare("DELETE FROM RecuperacionContrasena WHERE Correo = ?");
-        $stmt->bind_param("s", $correo);
-        $stmt->execute();
-
-        // Redirigir o mostrar mensaje de éxito
-        header("Location: ContraseñaRestablecida.php");
-        exit();
-    } else {
-        $error = "Token inválido o expirado.";
-    }
-
-    $stmt->close();
-    $conn->close();
+} catch (Exception $e) {
+    echo "Error al enviar el correo: {$mail->ErrorInfo}";
 }
 ?>
 
@@ -60,29 +78,18 @@ $mail->Port       = 587;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restablecer Contraseña - Tucalzado.com</title>
+    <title>Recuperar Contraseña - Tucalzado.com</title>
 </head>
 
 <body>
-    <h2>Restablecer Contraseña</h2>
+    <h2>Recuperar Contraseña</h2>
 
-    <?php
-    if (isset($error)) {
-        echo "<p style='color: red;'>$error</p>";
-    }
-    ?>
-
-    <!-- Formulario de restablecimiento de contraseña -->
     <form action="" method="post">
-        <input type="hidden" name="correo" value="<?php echo $_GET['correo']; ?>">
-        <input type="hidden" name="token" value="<?php echo $_GET['token']; ?>">
+        <label for="correo">Correo Electrónico:</label>
+        <input type="email" name="correo" required>
 
-        <label for="nuevaContrasena">Nueva Contraseña:</label>
-        <input type="password" name="nuevaContrasena" required>
-
-        <button type="submit">Restablecer Contraseña</button>
+        <button type="submit" name="enviarCorreo">Enviar Correo de Recuperación</button>
     </form>
-
 </body>
 
 </html>

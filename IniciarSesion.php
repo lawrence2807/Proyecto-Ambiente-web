@@ -35,7 +35,7 @@ if ($conn->connect_error) {
         if (password_verify($contrasena, $hashed_password)) {
             $_SESSION["ID_usuario"] = $id_usuario;
             $_SESSION["Nombre"] = $nombre;
-            header("Location: Menu_Principal.php"); // Redirige a la página principal
+            header("Location: Menu_Principal.php");  
             exit();
         } else {
             $error = "Contraseña incorrecta.";
@@ -77,7 +77,7 @@ if ($conn->connect_error) {
 
         <button type="submit">Iniciar Sesión</button>
 
-        <!-- Enlace alternativo para "¿No recuerdas tu contraseña?" -->
+         
         <div>
             <a href="OlvidarContrasena.php">¿No recuerdas tu contraseña?</a>
             <span> | </span>
