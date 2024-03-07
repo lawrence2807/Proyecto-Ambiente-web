@@ -19,12 +19,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contrasena = $_POST["contrasena"];
     $confirmarContrasena = $_POST["confirmarContrasena"];
 
-     $stmt = null;
+    $stmt = null;
+    $error = '';
 
-     if ($contrasena !== $confirmarContrasena) {
+    if ($contrasena !== $confirmarContrasena) {
         $error = "Las contraseñas no coinciden.";
     } else {
-         $stmt = $conn->prepare("SELECT ID_usuario FROM Usuarios WHERE CorreoElectronico = ?");
+        $stmt = $conn->prepare("SELECT ID_usuario FROM Usuarios WHERE CorreoElectronico = ?");
         $stmt->bind_param("s", $correo);
         $stmt->execute();
         $stmt->store_result();
@@ -32,16 +33,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->num_rows > 0) {
             $error = "Este correo ya está registrado.";
         } else {
-             $contrasenaHash = password_hash($contrasena, PASSWORD_BCRYPT);
+            $contrasenaHash = password_hash($contrasena, PASSWORD_BCRYPT);
             $stmt = $conn->prepare("INSERT INTO Usuarios (Nombre, CorreoElectronico, Contraseña) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $nombre, $correo, $contrasenaHash);
             $stmt->execute();
 
-             $registroExitoso = true;
+            $registroExitoso = true;
         }
     }
 
-     if ($stmt !== null) {
+    if ($stmt !== null) {
         $stmt->close();
     }
 
@@ -62,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Registro de Usuario</h2>
 
     <?php
-    if (isset($error)) {
+    if (!empty($error)) {
         echo "<p style='color: red;'>$error</p>";
     }
 
@@ -80,8 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <label for="contrasena">Contraseña:</label>
         <input type="password" name="contrasena" required>
-<small>La contraseña debe tener al menos 8 caracteres e incluir al menos una letra mayúscula, una letra minúscula y un número.</small>
-
+        <small>La contraseña debe tener al menos 8 caracteres e incluir al menos una letra mayúscula, una letra minúscula y un número.</small>
 
         <label for="confirmarContrasena">Confirmar Contraseña:</label>
         <input type="password" name="confirmarContrasena" required>
@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Registrarse</button>
     </form>
 
-     <p>¿Ya tienes una cuenta? <a href="IniciarSesion.php">Iniciar Sesión</a></p>
+    <p>¿Ya tienes una cuenta? <a href="IniciarSesion.php">Iniciar Sesión</a></p>
 </body>
 
 </html>
