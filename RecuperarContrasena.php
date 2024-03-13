@@ -25,8 +25,8 @@ try {
     $mail->isSMTP();
     $mail->Host       = 'smtp.office365.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'SkyLm12@outlook.com';
-    $mail->Password   = 'Elnegrocatu12.';
+    $mail->Username   = 'SkyLm12@outlook.com';   // Correo 
+    $mail->Password   = 'Elnegrocatu12.';      //CLAVE
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 
@@ -34,7 +34,7 @@ try {
         if (isset($_POST['correo'])) {
             $correo = $_POST['correo'];
 
-            // Generar y almacenar el código en la base de datos
+             
             $codigo = bin2hex(random_bytes(6));
             $expiracion = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
@@ -50,18 +50,18 @@ try {
             echo "Código de recuperación: $codigo <br>";
             echo "Correo enviado exitosamente.";
 
-            // Resto del código para enviar el correo
+         //Correo 
             $mail->setFrom('SkyLm12@outlook.com', 'Tu Calzado');
             $mail->addAddress($correo);
             $mail->SMTPDebug = 2; // Habilita el debugging: 1 = errores, 2 = errores y mensajes
 
             $mail->isHTML(true);
-            $mail->Subject = 'Código de recuperación de contraseña';
+            $mail->Subject = 'Codigo de recuperación de clave';
             $mail->Body    = "Tu codigo de recuperacion es: $codigo";
 
             $mail->send();
 
-            // Redirigir a CambiarContraseña.php
+            
             header("Location: CambiarContraseña.php");
             exit();
         } else {

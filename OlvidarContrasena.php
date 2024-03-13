@@ -47,23 +47,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->isSMTP();
             $mail->Host       = 'smtp.office365.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'padive2384@comsb.com';
-            $mail->Password   = '';
+            $mail->Username   = 'SkyLm12@outlook.com';
+            $mail->Password   = 'Elnegrocatu12.';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
             $mail->Port       = 587;
 
             // Recipients
-            $mail->setFrom('padive2384@comsb.com', 'TuCalzado');
+            $mail->setFrom('SkyLm12@outlook.com', 'TuCalzado');
             $mail->addAddress($correo);
 
             // Content
             $mail->isHTML(true);
-            $mail->Subject = '  Tiendas de zapatos grande';
-            $mail->Body    = 'Tu códigodddde recuperación es holaaa como estas este es e lco ccodosigos afasf
-            afaffaf
-            afwfwfwghasf
-            avcwfaf: ' . $codigo;
+            $mail->Subject = '  Tiendas de zapatos';
+            $mail->Body    = 'Tu codigo de recuperación es  : ' . $codigo;
 
             $mail->send();
 
@@ -78,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Cerrar la conexión a la base de datos al final del script
+ 
 $conn->close();
 ?>
 
