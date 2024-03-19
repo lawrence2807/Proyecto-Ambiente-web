@@ -37,5 +37,3 @@ $conn->close();
  
 echo "<script>alert('Producto eliminado correctamente.'); window.location.href = 'productos.php';</script>";
 ?>
-
-

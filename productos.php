@@ -1,19 +1,6 @@
 <?php
 session_start();
-
-// Función para obtener el nombre de la marca a partir de su ID
-function obtenerNombreMarca($conn, $id_marca) {
-    $stmt = $conn->prepare("SELECT Nombre FROM Marcas WHERE ID_marca = ?");
-    $stmt->bind_param("i", $id_marca);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        $marca = $result->fetch_assoc();
-        return $marca['Nombre'];
-    } else {
-        return "Marca no encontrada";
-    }
-}
+require_once 'Producto.php';
 
 // Verificar si el usuario está autenticado y tiene rol de administrador
 if (!isset($_SESSION["ID_usuario"]) || !isset($_SESSION["Nombre"]) || $_SESSION["Rol"] !== 'admin') {
@@ -21,56 +8,36 @@ if (!isset($_SESSION["ID_usuario"]) || !isset($_SESSION["Nombre"]) || $_SESSION[
     exit();
 }
 
-$servername = "localhost";
-$username = "root";
-$password = "Conexion";
-$dbname = "tutienda";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("La conexión falló: " . $conn->connect_error);
-}
-
-// Definir $tipoProducto fuera del bloque POST para evitar el error de variable indefinida
-$tipoProducto = "";
+$producto = new Producto();
 
 // Procesar el formulario de agregar producto
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nombreProducto = $_POST["nombreProducto"];
-    $descripcionProducto = $_POST["descripcionProducto"];
-    $precioProducto = $_POST["precioProducto"];
-    $stockProducto = $_POST["stockProducto"];
-    $marcaProducto = $_POST["marcaProducto"];
-    $tipoProducto = $_POST["tipoProducto"];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["agregar_producto"])) {
+    // Verificar si se reciben todos los datos esperados
+    if (isset($_POST["nombreProducto"], $_POST["descripcionProducto"], $_POST["precioProducto"], $_POST["stockProducto"], $_POST["marcaProducto"], $_POST["tipoProducto"], $_FILES["imagenProducto"])) {
+        $nombreProducto = $_POST["nombreProducto"];
+        $descripcionProducto = $_POST["descripcionProducto"];
+        $precioProducto = $_POST["precioProducto"];
+        $stockProducto = $_POST["stockProducto"];
+        $marcaProducto = $_POST["marcaProducto"];
+        $tipoProducto = $_POST["tipoProducto"];
 
-    // Depurar el valor de tipoProducto
-    echo "Tipo de producto seleccionado: " . $tipoProducto . "<br>";
+        // Procesar la carga de imagen
+        $imagenProducto = $_FILES["imagenProducto"];
+        $nombreImagen = uniqid() . '_' . $imagenProducto['name']; // Generar un nombre único para la imagen
+        $rutaImagen = 'uploads/' . $nombreImagen; // Ruta donde se guardará la imagen
+        move_uploaded_file($imagenProducto['tmp_name'], $rutaImagen); // Mover la imagen al servidor
 
-    // Mostrar el tipo de producto
-    echo "<td>" . $row['TipoProducto'] . "</td>";
-
-    // Procesar la carga de imagen
-    $imagenProducto = $_FILES["imagenProducto"];
-    $nombreImagen = uniqid() . '_' . $imagenProducto['name']; // Generar un nombre único para la imagen
-    $rutaImagen = 'uploads/' . $nombreImagen; // Ruta donde se guardará la imagen
-    move_uploaded_file($imagenProducto['tmp_name'], $rutaImagen); // Mover la imagen al servidor
-
-    // Insertar producto en la base de datos junto con la ruta de la imagen
-    $stmt = $conn->prepare("INSERT INTO Productos (Nombre, Descripcion, Precio, Stock, ID_marca, TipoProducto, Imagen) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssdiiis", $nombreProducto, $descripcionProducto, $precioProducto, $stockProducto, $marcaProducto, $tipoProducto, $rutaImagen);
-    if ($stmt->execute()) {
-        echo "Producto agregado correctamente.";
+        // Insertar producto en la base de datos junto con la ruta de la imagen
+        $producto->agregarProducto($nombreProducto, $descripcionProducto, $precioProducto, $stockProducto, $marcaProducto, $tipoProducto, $rutaImagen);
     } else {
-        echo "Error al agregar el producto: " . $conn->error;
+        // Redirigir a alguna página de error si no se reciben todos los datos esperados
+        header("Location: error.php");
+        exit();
     }
-
-    $stmt->close();
 }
 
 // Obtener todos los productos
-$productosQuery = "SELECT * FROM Productos";
-$productosResult = $conn->query($productosQuery);
+$productos = $producto->getAllProductos();
 ?>
 
 <!DOCTYPE html>
@@ -80,22 +47,8 @@ $productosResult = $conn->query($productosQuery);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos - Tu Calzado</title>
-     
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
+        /* Estilos CSS aquí */
     </style>
 </head>
 
@@ -103,97 +56,77 @@ $productosResult = $conn->query($productosQuery);
     <!-- Botón para retroceder al menú -->
     <a href="CentroControl.php">Volver al Menú</a>
 
-    <!-- Sección para agregar un nuevo producto -->
-    <section>
-        <h2>Agregar Producto</h2>
-        <form action="" method="post" enctype="multipart/form-data">
-            <label for="nombreProducto">Nombre:</label>
-            <input type="text" name="nombreProducto" required>
+    <!-- Formulario para agregar un nuevo producto -->
+    <h2>Agregar Producto</h2>
+    <form action="" method="post" enctype="multipart/form-data">
+        <!-- Campos del formulario aquí -->
+        <label for="nombreProducto">Nombre:</label>
+        <input type="text" id="nombreProducto" name="nombreProducto" required><br>
 
-            <label for="descripcionProducto">Descripción:</label>
-            <textarea name="descripcionProducto" required></textarea>
+        <label for="descripcionProducto">Descripción:</label>
+        <textarea id="descripcionProducto" name="descripcionProducto" required></textarea><br>
 
-            <label for="precioProducto">Precio (₡):</label>
-            <input type="number" name="precioProducto" required>
+        <label for="precioProducto">Precio:</label>
+        <input type="text" id="precioProducto" name="precioProducto" required><br>
 
-            <label for="stockProducto">Stock:</label>
-            <input type="number" name="stockProducto" required>
+        <label for="stockProducto">Stock:</label>
+        <input type="text" id="stockProducto" name="stockProducto" required><br>
 
-            <!-- Campo para cargar la imagen -->
-            <label for="imagenProducto">Imagen:</label>
-            <input type="file" name="imagenProducto" accept="image/*" required>
+        <label for="marcaProducto">Marca:</label>
+        <select id="marcaProducto" name="marcaProducto" required>
+            <option value="1">Nike</option>
+            <option value="2">Adidas</option>
+            <option value="3">Puma</option>
+            <option value="4">New Balance</option>
+            <option value="5">Reebok</option>
+        </select><br>
 
-            <!-- Lista de marcas -->
-            <label for="marcaProducto">Marca:</label>
-            <select name="marcaProducto" required>
-                <option value="1">Nike</option>
-                <option value="2">Adidas</option>
-                <option value="3">Puma</option>
-                <option value="4">New Balance</option>
-                <option value="5">Reebok</option>
-            </select>
+        <label for="tipoProducto">Tipo:</label>
+        <select id="tipoProducto" name="tipoProducto" required>
+            <option value="1">High-Top</option>
+            <option value="2">Running</option>
+            <option value="3">Urban</option>
+            <option value="4">Skate</option>
+            <option value="5">Exclusivas</option>
+        </select><br>
 
-            <!-- Lista de tipo de producto -->
-            <label for="tipoProducto">Tipo de Producto:</label>
-            <select name="tipoProducto" required>
-                <option value="High-Top">High-Top</option>
-                <option value="Running">Running</option>
-                <option value="Urban">Urban</option>
-                <option value="Skate">Skate</option>
-                <option value="Exclusivas">Exclusivas</option>
-            </select>
+        <!-- Campo para la imagen del producto -->
+        <label for="imagenProducto">Imagen:</label>
+        <input type="file" id="imagenProducto" name="imagenProducto" required><br>
 
-            <button type="submit">Agregar Producto</button>
-        </form>
-    </section>
+        <button type="submit" name="agregar_producto">Agregar Producto</button>
+    </form>
 
-   
-    <section>
-        <h2>Productos</h2>
-        <table>
-            <thead>
+    <!-- Lista de productos existentes -->
+    <h2>Productos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Marca</th>
+                <th>Tipo</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($productos as $p) { ?>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Precio (₡)</th>
-                    <th>Stock</th>
-                    <th>Marca</th>
-                    <th>Tipo de Producto</th>
-<th>Imagen</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody>
-<?php
-             // Mostrar cada producto en una fila de la tabla
-             while ($row = $productosResult->fetch_assoc()) {
-                 echo "<tr>";
-                 echo "<td>" . $row['Nombre'] . "</td>";
-                 echo "<td>" . $row['Descripcion'] . "</td>";
-                 echo "<td>" . $row['Precio'] . "</td>";
-                 echo "<td>" . $row['Stock'] . "</td>";
-                 echo "<td>" . obtenerNombreMarca($conn, $row['ID_marca']) . "</td>";  
-                 echo "<td>" . $row['TipoProducto'] . "</td>";  
-                  echo "<td><img src='" . $row['Imagen'] . "' alt='Imagen de Producto' style='width:100px;'></td>";
-                 echo "<td>";
-                  echo "<form action='ver_producto.php' method='get'>";
-                 echo "<input type='hidden' name='id_producto' value='" . $row['ID_producto'] . "'>";
-                 echo "<button type='submit'>Ver</button>";
-                 echo "</form>";
-                 echo "<form action='editar_producto.php' method='get'>";
-                 echo "<input type='hidden' name='id_producto' value='" . $row['ID_producto'] . "'>";
-                 echo "<button type='submit'>Editar</button>";
-                 echo "</form>";
-                 echo "<form action='eliminar_producto.php' method='post' onsubmit='return confirm(\"¿Estás seguro de eliminar este producto?\")'>";
-                 echo "<input type='hidden' name='id_producto' value='" . $row['ID_producto'] . "'>";
-                 echo "<button type='submit'>Eliminar</button>";
-                 echo "</form>";
-                 echo "</td>";
-                 echo "</tr>";
-             }
-             ?>
-</tbody>
-</table>
-</section>
+                     <td><?php echo $p['Nombre']; ?></td>
+                    <td><?php echo $p['Descripcion']; ?></td>
+                    <td><?php echo $p['Precio']; ?></td>
+                    <td><?php echo $p['Stock']; ?></td>
+                    <td><?php echo $p['Marca']; ?></td>
+                    <td><?php echo $p['Tipo']; ?></td>
+                    <td>
+                        <a href="editar_producto.php?id_producto=<?php echo $p['ID_producto']; ?>">Editar</a>
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
 </body>
+
 </html>

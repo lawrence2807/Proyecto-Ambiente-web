@@ -1,44 +1,45 @@
 <?php
-session_start();
+require_once 'Producto.php';
 
-// Verificar si el usuario está autenticado y tiene rol de administrador
-if (!isset($_SESSION["ID_usuario"]) || !isset($_SESSION["Nombre"]) || $_SESSION["Rol"] !== 'admin') {
-    header("Location: IniciarSesion.php"); // Redirigir si no es un administrador autenticado
+$producto = new Producto();
+$marcas = $producto->getAllMarcas();
+$tiposProducto = $producto->getAllTiposProducto();
+
+// Verificar si se ha proporcionado el ID del producto a editar
+if(isset($_GET['id_producto'])) {
+    $id_producto = $_GET['id_producto'];
+    $productoActual = $producto->getProductoByID($id_producto);
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["editar_producto"])) {
+        $id_producto = $_POST["id_producto"];
+        $nombreProducto = $_POST["nombreProducto"];
+        $descripcionProducto = $_POST["descripcionProducto"];
+        $precioProducto = $_POST["precioProducto"];
+        $stockProducto = $_POST["stockProducto"];
+        $marcaProducto = $_POST["marcaProducto"];
+        $tipoProducto = $_POST["tipoProducto"];
+
+         if ($_FILES["imagenProducto"]["name"] != '') {
+            $imagenProducto = $_FILES["imagenProducto"];
+            $nombreImagen = uniqid() . '_' . $imagenProducto['name']; // Generar un nombre único para la imagen
+            $rutaImagen = 'uploads/' . $nombreImagen; // Ruta donde se guardará la imagen
+            move_uploaded_file($imagenProducto['tmp_name'], $rutaImagen); // Mover la imagen al servidor
+        } else {
+             $productoActual = $producto->getProductoByID($id_producto);
+            $rutaImagen = $productoActual['Imagen'];
+        }
+
+         $producto->actualizarProducto($id_producto, $nombreProducto, $descripcionProducto, $precioProducto, $stockProducto, $marcaProducto, $tipoProducto, $rutaImagen);
+
+        // Redirigir después de la actualización
+        header("Location: productos.php");
+        exit();
+    }
+} else {
+    // Redirigir a algún lugar si no se proporciona un ID válido
+    header("Location: alguna_pagina.php");
     exit();
 }
-
-// Verificar si se recibió el ID del producto
-if (!isset($_GET['id_producto'])) {
-    header("Location: CentroControl.php"); // Redirigir si no se proporcionó el ID del producto
-    exit();
-}
-
-$servername = "localhost";
-$username = "root";
-$password = "Conexion";
-$dbname = "tutienda";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("La conexión falló: " . $conn->connect_error);
-}
-
-// Obtener el producto con el ID proporcionado
-$id_producto = $_GET['id_producto'];
-$stmt = $conn->prepare("SELECT * FROM Productos WHERE ID_producto = ?");
-$stmt->bind_param("i", $id_producto);
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Verificar si se encontró el producto
-if ($result->num_rows === 0) {
-    echo "No se encontró el producto.";
-    exit();
-}
-
-// Mostrar el formulario para editar el producto
-$row = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -48,62 +49,49 @@ $row = $result->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Producto - Tu Calzado</title>
-    <!-- Agrega aquí tus enlaces a estilos CSS si es necesario -->
+    <style>
+     </style>
 </head>
 
 <body>
-    <!-- Botón para retroceder al menú -->
-    <a href="CentroControl.php">Volver al Menú</a>
+     <a href="CentroControl.php">Volver al Menú</a>
 
-    <!-- Formulario para editar el producto -->
-    <h2>Editar Producto</h2>
-    <form action="actualizar_producto.php" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="id_producto" value="<?php echo $row['ID_producto']; ?>">
+     <h2>Editar Producto</h2>
+    <form action="" method="post" enctype="multipart/form-data">
+         <input type="hidden" name="id_producto" value="<?php echo $productoActual['ID_producto']; ?>">
+
         <label for="nombreProducto">Nombre:</label>
-        <input type="text" name="nombreProducto" value="<?php echo $row['Nombre']; ?>" required><br>
+        <input type="text" id="nombreProducto" name="nombreProducto" value="<?php echo $productoActual['Nombre']; ?>"><br>
 
         <label for="descripcionProducto">Descripción:</label>
-        <textarea name="descripcionProducto" required><?php echo $row['Descripcion']; ?></textarea><br>
+        <textarea id="descripcionProducto" name="descripcionProducto"><?php echo $productoActual['Descripcion']; ?></textarea><br>
 
-        <label for="precioProducto">Precio (₡):</label>
-        <input type="number" name="precioProducto" value="<?php echo $row['Precio']; ?>" required><br>
+        <label for="precioProducto">Precio:</label>
+        <input type="text" id="precioProducto" name="precioProducto" value="<?php echo $productoActual['Precio']; ?>"><br>
 
         <label for="stockProducto">Stock:</label>
-        <input type="number" name="stockProducto" value="<?php echo $row['Stock']; ?>" required><br>
+        <input type="text" id="stockProducto" name="stockProducto" value="<?php echo $productoActual['Stock']; ?>"><br>
 
-        <label for="imagenProducto">Imagen:</label>
-        <img src="<?php echo $row['Imagen']; ?>" alt="Imagen de Producto" style="width: 200px;"><br>
-        <input type="file" name="imagenProducto"><br>
-
-        <!-- Lista de marcas -->
         <label for="marcaProducto">Marca:</label>
-        <select name="marcaProducto" required>
-            <option value="1" <?php if ($row['ID_marca'] == 1) echo "selected"; ?>>Nike</option>
-            <option value="2" <?php if ($row['ID_marca'] == 2) echo "selected"; ?>>Adidas</option>
-            <option value="3" <?php if ($row['ID_marca'] == 3) echo "selected"; ?>>Puma</option>
-            <option value="4" <?php if ($row['ID_marca'] == 4) echo "selected"; ?>>New Balance</option>
-            <option value="5" <?php if ($row['ID_marca'] == 5) echo "selected"; ?>>Reebok</option>
+        <select id="marcaProducto" name="marcaProducto">
+            <?php while ($marca = $marcas->fetch_assoc()) { ?>
+                <option value="<?php echo $marca['ID_marca']; ?>" <?php if ($productoActual['ID_marca'] == $marca['ID_marca']) echo "selected"; ?>><?php echo $marca['Nombre']; ?></option>
+            <?php } ?>
         </select><br>
 
- <!-- Lista de tipo de producto -->
-<label for="tipoProducto">Tipo de Producto:</label>
-<select name="tipoProducto" required>
-    <?php
-    $tiposProducto = ['High-Top', 'Running', 'Urban', 'Skate', 'Exclusivas'];
-    foreach ($tiposProducto as $tipo) {
-        $selected = ($row['TipoProducto'] === $tipo) ? 'selected' : '';
-        echo "<option value='$tipo' $selected>$tipo</option>";
-    }
-    ?>
-</select><br>
+        <label for="tipoProducto">Tipo:</label>
+        <select id="tipoProducto" name="tipoProducto">
+            <?php while ($tipoProducto = $tiposProducto->fetch_assoc()) { ?>
+                <option value="<?php echo $tipoProducto['ID_tipo']; ?>" <?php if ($productoActual['ID_tipo'] == $tipoProducto['ID_tipo']) echo "selected"; ?>><?php echo $tipoProducto['Nombre']; ?></option>
+            <?php } ?>
+        </select><br>
 
-        <button type="submit">Actualizar Producto</button>
+         <label for="imagenProducto">Imagen:</label>
+        <input type="file" id="imagenProducto" name="imagenProducto"><br>
+
+        <button type="submit" name="editar_producto">Guardar Cambios</button>
     </form>
+
 </body>
 
 </html>
-
-<?php
-$stmt->close();
-$conn->close();
-?>
