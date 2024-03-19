@@ -1,0 +1,10 @@
+Options +FollowSymLinks
+RewriteEngine On
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+
+RewriteRule ^RecuperarContrasena\.php$ /RecuperarContrasena.php [QSA,NC,L]
+
+<FilesMatch "\.(php)$">
+    SetHandler application/x-httpd-php72
+</FilesMatch>
