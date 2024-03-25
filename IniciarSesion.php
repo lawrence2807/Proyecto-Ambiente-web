@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: CentroControl.php");
                 exit();
             } else {
-                header("Location: Menu_Principal.php");
+                header("Location: index.php");
                 exit();
             }
         } else {

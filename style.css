@@ -1,115 +1,108 @@
-:root {
-    --primario: #2765b0;
-    --primarioOscuro: #111d9d;
-    --secundario: #ffce00;
-    --secundarioOscuro: rgb(233, 187, 2);
-    --blanco: #FFF;
-    --negro: #000;
-    --fuentePrincipal: 'Staatliches', cursive;
+/**************************** Estilos personalizados para la navbar *****************************/
+ 
+.navbar-custom {
+    background-color: #f3c7c7fc; /* Color de fondo negro */
+    box-shadow: 0 0 20px rgba(227, 222, 222, 0.2); /* Sombra roja */
 }
 
-html {
-    box-sizing: border-box;
-    font-size: 62.5%
-    ;
+.navbar-custom .navbar-toggler-text {
+    color: #ff0000; /* Color rojo para el texto del botón del menú */
+    font-weight: bold; /* Texto más grueso */
+}
+
+.navbar-custom .nav-link {
+    color: #ff0000; /* Color rojo para los enlaces */
+    font-weight: bold; /* Texto más grueso */
+}
+
+.navbar-custom .nav-link:hover {
+    color: #e9a8a8; /* Cambia el color del texto al pasar el ratón por encima */
 }
 
 
+/*******************************************/
 body {
-    background-color: whitesmoke;
-    font-size: 3.5rem;
-    line-height: 1.5;
-}
-
-p {
-    font-size: 1.8rem;
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--blanco);
-}
-
-a {
-    text-decoration: none;
-    color: black;
-}
-
-
-body{
-    font-family: sans-serif;
     margin: 0;
-    color: black;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0abab;
+    background-image: url('img/backgg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh; /* Ajusta la altura del cuerpo al 100% de la altura de la ventana */
 }
 
-.header {
-    display: flex;
-    height: 70px;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
+.container {
+    max-width: 960px;
+    margin: auto;
+    padding: 20px;
 }
 
-.Logo {
-    display: flex;
-    align-items: center;
+.section {
+    margin-bottom: 40px;
 }
 
-
-
-.Logo img{
-    height: 100px;
-    margin-right: 10px;
+.section-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-.footer {
-    background-color: var(--primarioOscuro);
-    padding: 1rem 0;
-    margin-top: 2rem;
+.section-text {
+    margin-bottom: 20px;
 }
 
-.footer__texto {
-    font-family: var(--fuentePrincipal);
-    text-align: center;
-    font-size: 2.2rem;
+.section-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border: 2px solid #ff0000; /* Cambiado a rojo */
+    color: #ff0000; /* Cambiado a rojo */
+    border-radius: 5px;
 }
 
-
-
-.navegacion {
-    background-color: var(--primarioOscuro);
-    padding: 1rem 0;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-  
+.section-button:hover {
+    background-color: #cc0000; /* Cambiado a un tono más oscuro de rojo */
+    color: #fff;
 }
 
-.navegacion__enlace {
-    font: var(--fuentePrincipal);
-    color: var(--blanco);
-    font-size: 3rem;
-    
-}
-
-.navegacion__enlace:hover,
-.navegacion__enlace--activo {
-    color: var(--secundario);
-}
-
-.error {
-    color: red;
-    font-size: 2.8rem;
-}
+/* Estilos para los botones */
+ 
 
 
-nav a{
-font-weight: 600;
-padding-right: 10px;
+/* Estilos para los botones */
+ 
+
+ 
+/* Sobrescribe los estilos de Bootstrap para los botones */
+ 
+.btn-outline-primary {
+    color: #9b8f8f; /* Color del texto en rojo */
+    background-color: transparent !important; /* Fondo transparente */
+    border-color: #ff0000 !important; /* Color del borde rojo */
 }
 
-nav a:hover{
-    color: #ffce00;
+.btn-outline-primary:hover {
+    color: #040404; /* Color del texto en blanco al pasar el mouse */
+    background-color: #f76363 !important; /* Color de fondo rojo más oscuro al pasar el mouse */
+    border-color: #fb5858 !important; /* Color del borde rojo más oscuro al pasar el mouse */
 }
 
-.img_pre{
-    text-align: center;
-    
+.blurp {
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro con transparencia */
+    padding: 20px;
+    border-radius: 10px;
 }
+
+.blurp-title,
+.blurp-text {
+    color: #fff; /* Color del texto blanco */
+}
+
+.blurp-title {
+    margin-bottom: 10px;
+}
+
