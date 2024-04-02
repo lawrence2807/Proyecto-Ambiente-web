@@ -1,4 +1,11 @@
-<?php
+
+<style>
+ 
+.navbar-nav .nav-link {
+        color: white !important;
+    }
+    </style>
+    <?php
 // Verificar si el usuario ha iniciado sesión
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -46,13 +53,13 @@ if (isset($_SESSION['ID_usuario'])) {
                         <a class="nav-link" href="#">Noticias</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Acerca de nosotros</a>
+                        <a class="nav-link" href="AcercaDeNosotros.php">Acerca de nosotros</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Contacto</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Productos</a>
+                        <a class="nav-link" href="ProductInicio.php">Productos</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">

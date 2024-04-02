@@ -1,14 +1,3 @@
-<?php
-// Verificar si el usuario ha iniciado sesión
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-// Si no ha iniciado sesión, redirigirlo a la página de inicio de sesión
-if (!isset($_SESSION["ID_usuario"])) {
-    header("Location: iniciarsesion.php");
-    exit(); // Detiene la ejecución del script
-}  
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,25 +12,42 @@ if (!isset($_SESSION["ID_usuario"])) {
 </head>
 <?php include 'navbar.php'; ?> <!-- Aquí se incluye el archivo navbar.php -->
 
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #080808;
+    background-image: url('img/backgg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh; 
+    background-color: black !important; /* Fondo negro */
+            color: white !important; /* Texto blanco */
+}
+     
+    </style>
 <body>
 
 
-    <div class="blurp container">
+    <div class="blurp container wide-container"> <!-- Agrega la clase 'wide-container' aquí -->
  
-        <h1 class="text-center">Bienvenido a Tucalzado.com</h1>
+    <h1 class="text-center" style="color: white;">Bienvenido a TuCalzado   </h1>
 
         <!-- Texto principal -->
         <section class="section">
             <h2 class="section-title blurp-title">Acerca de Nosotros</h2>
             <p class="section-text blurp-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam hendrerit fringilla turpis, at viverra nisi vehicula nec. Sed congue leo sit amet elit ultricies, nec gravida eros fermentum. Vivamus lacinia augue eu tellus tempus, a aliquam lorem sollicitudin. Integer vel tellus et neque suscipit viverra vel id erat. Fusce id nisl eu tortor vestibulum placerat.</p>
-            <a href="#" class="btn btn-outline-primary section-button">Leer más</a>
+            <a href="AcercaDeNosotros.php" class="btn btn-outline-primary section-button">Leer más</a>
         </section>
 
         <!-- Título de Productos -->
         <section class="section">
             <h2 class="section-title blurp-title">Productos</h2>
             <p class="section-text blurp-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam hendrerit fringilla turpis, at viverra nisi vehicula nec. Sed congue leo sit amet elit ultricies, nec gravida eros fermentum. Vivamus lacinia augue eu tellus tempus, a aliquam lorem sollicitudin. Integer vel tellus et neque suscipit viverra vel id erat. Fusce id nisl eu tortor vestibulum placerat.</p>
-            <a href="#" class="btn btn-outline-primary section-button">Ver productos</a>
+            <a href="ProductInicio.php" class="btn btn-outline-primary section-button">Ver productos</a>
         </section>
 
         <!-- Título de Promociones -->

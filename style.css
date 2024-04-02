@@ -20,18 +20,17 @@
 }
 
 
-/*******************************************/
-body {
+/********************************************************************************************************************************/body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #f0abab;
-    background-image: url('img/backgg.jpg');
+    background-color: #080808;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    height: 100vh; /* Ajusta la altura del cuerpo al 100% de la altura de la ventana */
+    min-height: 100vh; /* Esto asegura que el body ocupe al menos el 100% de la altura de la ventana del navegador */
 }
+
 
 .container {
     max-width: 960px;
@@ -69,14 +68,12 @@ body {
     color: #fff;
 }
 
-/* Estilos para los botones */
- 
 
-
-/* Estilos para los botones */
- 
-
- 
+.wide-container {
+    max-width: 1200px; /* Ajusta el ancho máximo según sea necesario */
+    margin: auto; /* Centra el contenedor horizontalmente */
+}
+ a
 /* Sobrescribe los estilos de Bootstrap para los botones */
  
 .btn-outline-primary {
@@ -106,3 +103,117 @@ body {
     margin-bottom: 10px;
 }
 
+
+
+
+
+/********************************************************************************************************************************/
+
+/* Estilo para el footer */
+.footer {
+    background-color: black;
+    color: white;
+    padding: 50px 0;
+    position: relative; /* Para posicionar correctamente las llamas */
+    box-shadow: 0 0 20px 0px red; /* Sombra roja en el borde */
+}
+
+.footer__container {
+    display: flex;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer__item {
+    flex: 1 1 auto;
+    margin: 0 20px;
+}
+
+.footer__title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.footer__text {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.footer__list {
+    list-style: none;
+    padding: 0;
+}
+
+.footer__list li {
+    margin-bottom: 5px;
+}
+
+.footer__link {
+    color: white;
+    text-decoration: none;
+}
+
+.footer__link:hover {
+    text-decoration: underline;
+}
+
+
+/*****************************************************************************************************************/
+
+
+/* Estilos para los cards */
+.card {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f8f9fa;
+    transition: box-shadow 0.3s;
+    margin-bottom: 20px; /* Margen inferior para separar los cards */
+    margin-right: 15px; /* Margen derecho para separar los cards */
+    margin-left: 15px; /* Margen izquierdo para separar los cards */
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    color: #555;
+}
+
+.card-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.card-button:hover {
+    background-color: #0056b3;
+}
+
+/* Separación entre las columnas */
+.row-cols-md-3 > * {
+    margin-bottom: 90px; /* Espacio entre las filas */
+}
+
+/* Separación entre las filas */
+.row {
+    margin-bottom: -80px; /* Espacio negativo para compensar el margen inferior de los cards */
+}
+/*******************************************************************************************************************/

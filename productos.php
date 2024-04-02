@@ -1,3 +1,23 @@
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+</style>
 <?php
 session_start();
 require_once 'Producto.php';
@@ -121,8 +141,27 @@ $productos = $producto->getAllProductos();
                     <td><?php echo $p['Marca']; ?></td>
                     <td><?php echo $p['Tipo']; ?></td>
                     <td>
-                        <a href="editar_producto.php?id_producto=<?php echo $p['ID_producto']; ?>">Editar</a>
-                    </td>
+    <form action="editar_producto.php" method="get">
+        <input type="hidden" name="id_producto" value="<?php echo $p['ID_producto']; ?>">
+        <button type="submit" style="background-color: transparent; border: none; cursor: pointer;">Editar</button>
+    </form>
+</td>
+<td>
+    <form action="eliminar_producto.php" method="post" onsubmit="return confirmarEliminar(<?php echo $p['ID_producto']; ?>)">
+        <input type="hidden" name="id_producto" value="<?php echo $p['ID_producto']; ?>">
+        <button type="submit" style="background-color: transparent; border: none; cursor: pointer;">Eliminar</button>
+    </form>
+</td>
+
+<script>
+    function confirmarEliminar(idProducto) {
+        return confirm('¿Estás seguro de eliminar este producto?');
+    }
+</script>
+
+
+</td>
+
                 </tr>
             <?php } ?>
         </tbody>

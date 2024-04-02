@@ -12,24 +12,20 @@ $username = "root";
 $password = "Conexion";
 $dbname = "tutienda";
 
+// Crear la conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+// Verificar la conexión
 if ($conn->connect_error) {
     die("La conexión falló: " . $conn->connect_error);
 }
 
-// Obtener todos los productos
-$productosQuery = "SELECT p.ID_producto, p.Nombre, p.Descripcion, p.Precio, p.Stock, p.Imagen, m.Nombre AS Marca, 
-                        CASE p.TipoProducto 
-                            WHEN 'High-Top' THEN 'High-Top'
-                            WHEN 'Running' THEN 'Running'
-                            WHEN 'Urban' THEN 'Urban'
-                            WHEN 'Skate' THEN 'Skate'
-                            WHEN 'Exclusivas' THEN 'Exclusivas'
-                            ELSE 'Desconocido'
-                        END AS TipoProducto
-                    FROM Productos p 
-                    INNER JOIN Marcas m ON p.ID_marca = m.ID_marca";
+// Construir la consulta SQL para obtener todos los productos
+$productosQuery = "SELECT p.ID_producto, p.Nombre, p.Descripcion, p.Precio, p.Stock, p.Imagen, m.Nombre AS Marca, tp.Nombre AS TipoProducto
+FROM Productos p 
+INNER JOIN Marcas m ON p.ID_marca = m.ID_marca
+INNER JOIN TiposProducto tp ON p.ID_tipo = tp.ID_tipo";
+
 
 // Filtrar por nombre de producto y/o tipo de producto si se envió una búsqueda
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
@@ -48,7 +44,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $productosQuery .= $whereClause;
 }
 
+// Ejecutar la consulta SQL
 $productosResult = $conn->query($productosQuery);
+
+// Verificar si la consulta devolvió resultados
+if ($productosResult === false) {
+    die("Error al ejecutar la consulta: " . $conn->error);
+}
 ?>
 
 <!DOCTYPE html>
