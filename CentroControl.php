@@ -45,11 +45,14 @@ $conn->close();
         <!-- Nombre de la tienda -->
         <h1>Tu Calzado</h1>
 
+        <!-- Botón para cerrar sesión -->
+        <a href="cerrarsesion.php">Cerrar Sesión</a>
+
         <!-- Barra de navegación y logo pequeño -->
         <div class="row">
             <!-- Logo pequeño -->
             <div class="col-md-2">
-                <img src="ruta/al/logo_pequeno.png" alt="Logo pequeño">
+                <img src="/img/Logo.png" alt="Logo pequeño">
             </div>
             <!-- Nombre del usuario registrado -->
             <div class="col-md-10 text-right">
