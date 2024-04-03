@@ -1,3 +1,16 @@
+
+<?php
+session_start();
+
+// Verificar si el usuario no ha iniciado sesión
+if (!isset($_SESSION["ID_usuario"])) {
+    // Si no ha iniciado sesión, redirigirlo a la página de inicio de sesión
+    header("Location: iniciarsesion.php");
+    exit(); // Detiene la ejecución del script
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,7 +82,20 @@
         </div>
     </div>
 </section>
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>       
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 <?php include 'footer.php'; ?>
 
 </body>

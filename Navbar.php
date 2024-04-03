@@ -50,16 +50,18 @@ if (isset($_SESSION['ID_usuario'])) {
                         <a class="nav-link" href="index.php">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Noticias</a>
+                        <a class="nav-link" href="carrito.php">Carrito</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="AcercaDeNosotros.php">Acerca de nosotros</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contacto</a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="ProductInicio.php">Productos</a>
+                    </li><li class="nav-item">
+                        <a class="nav-link" href="#">Contacto</a>
+                    </li><li class="nav-item">
+                        <a class="nav-link" href="#">Noticias</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
