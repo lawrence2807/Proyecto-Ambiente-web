@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuestros productos - Tu Calzado</title>
-    <!-- Agrega aquí tus enlaces a estilos CSS si es necesario -->
+    
     <style>
         /* Estilos CSS para la página de productos */
         body {
@@ -24,6 +24,7 @@
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color: white; /* Color blanco para el título */
         }
 
         .search-container {
@@ -39,6 +40,19 @@
             margin-right: 10px;
         }
 
+        .search-btn {
+            padding: 10px 20px;
+            background-color: #ff0000; /* Color rojo para el botón */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            background-color: #cc0000; /* Cambio de color al pasar el mouse */
+        }
+
         .products-container {
             display: flex;
             flex-wrap: wrap;
@@ -51,7 +65,7 @@
             background-color: black;
             color: white;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Shadow rojo */
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
             overflow: hidden;
             transition: transform 0.3s ease-in-out;
         }
@@ -89,74 +103,64 @@
             padding: 10px;
             text-align: center;
             background-color: transparent;
-            color: #ff0000; /* Letra roja */
+            color: #ff0000;
             text-decoration: none;
-            border: 1px solid #ff0000; /* Borde rojo */
+            border: 1px solid #ff0000;
             border-radius: 5px;
             transition: background-color 0.3s ease-in-out;
         }
 
         .add-to-cart-btn:hover {
-            background-color: #ff0000; /* Relleno rojo al pasar el mouse */
+            background-color: #ff0000;
             color: white;
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <?php include 'navbar.php'; ?>
+     <?php include 'navbar.php'; ?>
 
-    <!-- Contenedor principal -->
-    <div class="container">
-        <!-- Título de la página -->
-        <h1>Nuestros productos</h1>
-
-        <!-- Barra de búsqueda -->
-        <div class="search-container">
+     <div class="container">
+         <h1 style= >Nuestros productos</h1> <!-- Estilo para el título -->
+         
+         <div class="search-container">
             <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nombre o precio">
             <button onclick="searchProducts()" class="search-btn">Buscar</button>
         </div>
 
-        <!-- Contenedor de productos -->
-        <div class="products-container">
+         <div class="products-container">
             <?php
-            // Incluye el archivo de la clase de conexión a la base de datos
+            
             include 'DBConnection.php';
 
-            // Instancia la clase de conexión a la base de datos
-            $dbConnection = new DBConnection();
+             $dbConnection = new DBConnection();
             $conn = $dbConnection->getConnection();
 
-            // Verifica la conexión
-            if ($conn->connect_error) {
+             if ($conn->connect_error) {
                 die("La conexión falló: " . $conn->connect_error);
             }
 
-            // Consulta a la base de datos para obtener los productos
-            $sql = "SELECT ID_producto, Nombre, Descripcion, Precio, Imagen FROM Productos";
+             $sql = "SELECT ID_producto, Nombre, Descripcion, Precio, Imagen FROM Productos";
             $result = $conn->query($sql);
 
-            // Si hay resultados, muestra los productos en tarjetas
-            if ($result->num_rows > 0) {
-                // Bucle PHP modificado para incluir el ID_producto en el botón "Agregar al carrito"
-                while ($row = $result->fetch_assoc()) {
-                  echo '<div class="col-md-3">';
-                  echo '<div class="product-card">';
-                  echo '<img class="product-image" src="' . $row['Imagen'] . '" alt="' . $row['Nombre'] . '">';
-                  echo '<div class="product-details">';
-                  echo '<h3 class="product-title">' . $row['Nombre'] . '</h3>';
-                  echo '<p class="product-description">' . $row['Descripcion'] . '</p>';
-                  echo '<p class="product-price">Precio: ' . $row['Precio'] . ' CRC</p>';
-                  echo '<form method="post" action="carrito.php">';
-                  echo '<input type="hidden" name="id_producto" value="' . $row['ID_producto'] . '">';
-                  echo '<input type="hidden" name="nombre" value="' . $row['Nombre'] . '">';
-                  echo '<input type="hidden" name="descripcion" value="' . $row['Descripcion'] . '">';
-                  echo '<input type="hidden" name="precio" value="' . $row['Precio'] . '">';
-                  echo '<button type="submit" class="add-to-cart-btn">Agregar al carrito</button>';
-                  echo '</form>';
-                  echo '</div></div></div>';
-              }
+             if ($result->num_rows > 0) {
+                 while ($row = $result->fetch_assoc()) {
+                    echo '<div class="col-md-3">';
+                    echo '<div class="product-card">';
+                    echo '<img class="product-image" src="' . $row['Imagen'] . '" alt="' . $row['Nombre'] . '">';
+                    echo '<div class="product-details">';
+                    echo '<h3 class="product-title">' . $row['Nombre'] . '</h3>';
+                    echo '<p class="product-description">' . $row['Descripcion'] . '</p>';
+                    echo '<p class="product-price">Precio: ' . $row['Precio'] . ' CRC</p>';
+                    echo '<form method="post" action="carrito.php" onsubmit="agregarAlCarrito(event); return false;">';
+                    echo '<input type="hidden" name="id_producto" value="' . $row['ID_producto'] . '">';
+                    echo '<input type="hidden" name="nombre" value="' . $row['Nombre'] . '">';
+                    echo '<input type="hidden" name="descripcion" value="' . $row['Descripcion'] . '">';
+                    echo '<input type="hidden" name="precio" value="' . $row['Precio'] . '">';
+                    echo '<button type="submit" class="add-to-cart-btn">Agregar al carrito</button>';
+                    echo '</form>';
+                    echo '</div></div></div>';
+                }
             } else {
                 echo "No se encontraron productos.";
             }
@@ -166,18 +170,14 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <?php include 'footer.php'; ?>
+     <?php include 'footer.php'; ?>
 
-    <!-- Agrega aquí tus scripts JavaScript si es necesario -->
-    <script>
+     <script>
         function searchProducts() {
-            // Obtiene el valor del input de búsqueda
-            var searchInput = document.getElementById("searchInput").value.toUpperCase();
+             var searchInput = document.getElementById("searchInput").value.toUpperCase();
             var products = document.getElementsByClassName("product-card");
 
-            // Itera sobre los productos y muestra u oculta según la búsqueda
-            for (var i = 0; i < products.length; i++) {
+             for (var i = 0; i < products.length; i++) {
                 var title = products[i].getElementsByClassName("product-title")[0];
                 var description = products[i].getElementsByClassName("product-description")[0];
                 var price = products[i].getElementsByClassName("product-price")[0];
@@ -193,6 +193,34 @@
                     products[i].style.display = "none";
                 }
             }
+        }
+
+        function agregarAlCarrito(event) {
+             event.preventDefault();
+
+             var form = event.target.closest('form');
+
+             var formData = new FormData(form);
+
+             var xhr = new XMLHttpRequest();
+
+             xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                     console.log(xhr.responseText);
+                     // Mostrar alerta
+                     alert('Producto agregado con éxito al carrito.');
+                } else {
+                    console.error(xhr.statusText);
+                }
+            };
+
+             xhr.onerror = function () {
+                 console.error(xhr.statusText);
+            };
+
+            
+            xhr.open(form.method, form.action);
+            xhr.send(formData);
         }
     </script>
 </body>
