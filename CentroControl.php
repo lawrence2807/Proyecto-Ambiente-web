@@ -18,12 +18,10 @@ if ($conn->connect_error) {
     die("La conexión falló: " . $conn->connect_error);
 }
 
-// Obtener marcas disponibles
-$marcasQuery = "SELECT Nombre FROM Marcas";
+ $marcasQuery = "SELECT Nombre FROM Marcas";
 $marcasResult = $conn->query($marcasQuery);
 
-// Obtener productos e imágenes después de la inserción
-$productosQuery = "SELECT p.*, i.RutaImagen FROM Productos p LEFT JOIN ImagenesProductos i ON p.ID_producto = i.ID_producto";
+ $productosQuery = "SELECT p.*, i.RutaImagen FROM Productos p LEFT JOIN ImagenesProductos i ON p.ID_producto = i.ID_producto";
 $productosResult = $conn->query($productosQuery);
 
 $conn->close();
@@ -36,8 +34,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centro de Control - Tucalzado.com</title>
-    <!-- Agrega aquí tus enlaces a estilos CSS si es necesario -->
-</head>
+ </head>
 
 <body>
     <!-- Inicio del contenido de la página -->
@@ -60,8 +57,7 @@ $conn->close();
             </div>
         </div>
 
-        <!-- Barra de navegación lateral -->
-        <div class="row">
+         <div class="row">
             <div class="col-md-2">
                 <ul class="nav flex-column">
                     <li class="nav-item">
@@ -71,19 +67,20 @@ $conn->close();
                         <a class="nav-link" href="productos.php">Productos</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="pedidos.php">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="metricas.php">Métricas</a>
                     </li>
                 </ul>
             </div>
-            <!-- Contenido principal -->
+          
             <div class="col-md-10">
-                <!-- Contenido principal -->
+              
             </div>
         </div>
     </div>
-    <!-- Fin del contenido de la página -->
-
-    <!-- Agrega aquí tus scripts JavaScript si es necesario -->
+   
 </body>
 
 </html>

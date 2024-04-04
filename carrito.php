@@ -1,29 +1,19 @@
 <?php
-// Inicia la sesión si no está iniciada
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+session_start();
+
+if (!isset($_SESSION["ID_usuario"])) {
+    header("Location: iniciarsesion.php");
+    exit();
 }
+
+include 'DBConnection.php';
+
+$dbConnection = new DBConnection();
+$conexion = $dbConnection->getConnection();
 
 // Función para agregar un producto al carrito
 function agregarAlCarrito($producto) {
     $_SESSION['carrito'][] = $producto;
-}
-
-// Verificamos si se ha enviado un formulario para agregar un producto al carrito
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nombre']) && isset($_POST['descripcion']) && isset($_POST['precio'])) {
-    // Creamos un array con los datos del producto
-    $producto = array(
-        'nombre' => $_POST['nombre'],
-        'descripcion' => $_POST['descripcion'],
-        'precio' => $_POST['precio']
-    );
-
-    // Agregamos el producto al carrito
-    agregarAlCarrito($producto);
-
-    // Redireccionamos de nuevo a la página de inicio de productos
-    header("Location: ProductInicio.php");
-    exit;
 }
 
 // Función para eliminar un producto del carrito
@@ -51,7 +41,55 @@ function vaciarCarrito() {
     $_SESSION['carrito'] = array();
 }
 
-// Verificamos si se ha enviado un formulario para eliminar un producto del carrito
+// Función para finalizar la compra y guardar el pedido en la base de datos
+function finalizarCompra() {
+    global $conexion;
+
+    // Insertar el pedido en la tabla Pedidos
+    $sql = "INSERT INTO Pedidos (ID_usuario, Fecha) VALUES (?, NOW())";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("i", $_SESSION["ID_usuario"]);
+    $stmt->execute();
+    $id_pedido = $stmt->insert_id;
+    $stmt->close();
+
+    // Insertar los detalles del pedido en la tabla DetallesPedido
+    foreach ($_SESSION['carrito'] as $producto) {
+        $sql = "INSERT INTO DetallesPedido (ID_pedido, ID_producto, Cantidad, PrecioUnitario) VALUES (?, ?, ?, ?)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("iiid", $id_pedido, $producto['id_producto'], $producto['cantidad'], $producto['precio']);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    // Limpiar el carrito después de finalizar la compra
+    vaciarCarrito();
+
+    // Redirigir a la página de pedidos
+    header("Location: pedidos.php");
+    exit;
+}
+
+// Verificar si se ha enviado un formulario para agregar un producto al carrito
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nombre']) && isset($_POST['descripcion']) && isset($_POST['precio'])) {
+    // Creamos un array con los datos del producto
+    $producto = array(
+        'nombre' => $_POST['nombre'],
+        'descripcion' => $_POST['descripcion'],
+        'precio' => $_POST['precio'],
+        'id_producto' => $_POST['id_producto'], // Agregar el ID del producto
+        'cantidad' => $_POST['cantidad'] // Agregar la cantidad del producto
+    );
+
+    // Agregamos el producto al carrito
+    agregarAlCarrito($producto);
+
+    // Redireccionamos de nuevo a la página de inicio de productos
+    header("Location: ProductInicio.php");
+    exit;
+}
+
+// Verificar si se ha enviado un formulario para eliminar un producto del carrito
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminarProducto'])) {
     eliminarDelCarrito($_POST['indice']);
     // Redireccionamos de nuevo a la página del carrito
@@ -59,12 +97,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['eliminarProducto'])) {
     exit;
 }
 
-// Verificamos si se ha enviado un formulario para vaciar el carrito
+// Verificar si se ha enviado un formulario para vaciar el carrito
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['vaciarCarrito'])) {
     vaciarCarrito();
     // Redireccionamos de nuevo a la página del carrito
     header("Location: carrito.php");
     exit;
+}
+
+// Verificar si se ha enviado un formulario para finalizar la compra
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['finalizarCompra'])) {
+    finalizarCompra();
 }
 ?>
 
@@ -121,7 +164,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['vaciarCarrito'])) {
         .total {
             font-weight: bold;
             margin-bottom: 10px;
-            color: #333; /* Color de texto para el total */
+            color: #333;  
         }
 
         .actions {
@@ -146,15 +189,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['vaciarCarrito'])) {
 </head>
 
 <body>
-    <!-- Navbar -->
     <?php include 'navbar.php'; ?>
 
-    <!-- Contenedor principal -->
     <div class="container">
-        <!-- Título de la página -->
         <h1>Carrito de Compras</h1>
 
-        <!-- Mostrar los productos en el carrito -->
         <?php if (!empty($_SESSION['carrito'])) : ?>
             <table>
                 <thead>
@@ -182,13 +221,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['vaciarCarrito'])) {
                 </tbody>
             </table>
 
-            <!-- Mostrar el total de la compra -->
             <p class="total">Total: <?php echo calcularTotal(); ?></p>
 
-            <!-- Botón para vaciar el carrito -->
             <div class="actions">
                 <form method="post" action="carrito.php">
                     <button type="submit" name="vaciarCarrito">Vaciar Carrito</button>
+                </form>
+                <form method="post" action="carrito.php">
+                    <button type="submit" name="finalizarCompra">Finalizar Compra</button>
                 </form>
             </div>
         <?php else : ?>
@@ -196,12 +236,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['vaciarCarrito'])) {
         <?php endif; ?>
     </div>
 
-    <!-- Footer -->
     <?php include 'footer.php'; ?>
 
-    <!-- Agrega aquí tus scripts JavaScript si es necesario -->
     <script>
-        // Puedes agregar scripts JavaScript si los necesitas
     </script>
 </body>
 

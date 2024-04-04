@@ -19,11 +19,11 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Verifica que se haya proporcionado la dirección de correo electrónico
+   
     if (isset($_POST['correo'])) {
         $correo = $conn->real_escape_string($_POST["correo"]);
 
-        // Genera y almacena el código en la base de datos
+        
         $codigo = bin2hex(random_bytes(6));
         $expiracion = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $mail->send();
 
-            // Redirigir o mostrar mensaje de éxito
+           
             header("Location: CambiarContraseña.php?correo=" . urlencode($correo));
             exit();
         } catch (Exception $e) {

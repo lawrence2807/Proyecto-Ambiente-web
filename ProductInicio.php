@@ -121,7 +121,7 @@
      <?php include 'navbar.php'; ?>
 
      <div class="container">
-         <h1 style= >Nuestros productos</h1> <!-- Estilo para el título -->
+         <h1 style= >Nuestros productos</h1>  
          
          <div class="search-container">
             <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nombre o precio">
